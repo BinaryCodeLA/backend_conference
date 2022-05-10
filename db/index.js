@@ -14,7 +14,10 @@ const pool = mysql.createPool(
     }
     );
 
-
+/**
+ * Talks
+ * 
+ */
 master_db.getTalks = () => {
 
     return new Promise((resolve, reject) => {
@@ -61,6 +64,12 @@ master_db.RemoveTalks = (id) => {
         })
     })
 }
+
+/**
+ * 
+ * user 
+ * 
+ */
 master_db.UserLogin = (user) => {
 
     return new Promise((resolve, reject) => {
@@ -79,4 +88,46 @@ master_db.UserLogin = (user) => {
     })
 }
 
+/**
+ * Attendee
+ */
+
+ master_db.AddAttendee = (attendee) => {
+
+    return new Promise((resolve, reject) => {
+        
+        pool.query("INSERT INTO attendees (name_att, company_att, email_att) values ( ? , ? , ? )",
+        [attendee.name, 
+         attendee.company, 
+         attendee.mail
+         ], (err, results) => {
+            
+            if(err){
+                console.log("error is: "+err);
+            }
+            
+            return resolve(results);
+        })
+    })
+}
+
+master_db.AddAttendeewithTalk = (attendee) => {
+
+    return new Promise((resolve, reject) => {
+        
+        pool.query("INSERT INTO attendees (name_att, company_att, email_att,idtalks) values ( ? , ? , ?, ? )",
+        [attendee.name, 
+         attendee.company, 
+         attendee.mail,
+         attendee.talkid
+         ], (err, results) => {
+            
+            if(err){
+                console.log("error is: "+err);
+            }
+            
+            return resolve(results);
+        })
+    })
+}
 module.exports = {master_db};

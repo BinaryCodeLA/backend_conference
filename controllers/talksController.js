@@ -23,15 +23,15 @@ const AddTalkController = async (req, res) => {
             room: req.body.room
         }
         if(!talks.title || !talks.abs || !talks.room)
-            res.status(400).json({msg : "Bad Request"})
+           return res.status(400).json({msg : "Bad Request"})
         
         let resultTalks = await db.master_db.AddTalks(talks);
         console.log("resultTalks: ", resultTalks);
         if(resultTalks.affectedRows > 0)
-            res.status(201).json({msg : "Talks Added Sucessfully"});
+           return res.status(201).json({msg : "Talks Added Sucessfully"});
     } catch (error) {
         console.log("error=> ", error);
-        res.status(500).json({msg : "Internal Server Error"})
+         return res.status(500).json({msg : "Internal Server Error"})
     }
     
 }
