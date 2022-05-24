@@ -22,7 +22,7 @@ master_db.getTalks = () => {
 
     return new Promise((resolve, reject) => {
         
-        pool.query("SELECT * FROM talks order by idtalks", (err, results) => {
+        pool.query("SELECT idtalks, tittle_talks, abstract_talks, room, IFNULL(name_spk,'No associated speaker') as speaker FROM talks left join speakers on idSpeakers = idSpeaker order by idtalks", (err, results) => {
             
             if(err){
                 console.log("error is: "+err);
@@ -121,6 +121,21 @@ master_db.AddAttendeewithTalk = (attendee) => {
          attendee.mail,
          attendee.talkid
          ], (err, results) => {
+            
+            if(err){
+                console.log("error is: "+err);
+            }
+            
+            return resolve(results);
+        })
+    })
+}
+master_db.GetAttendee = (talkid) => {
+
+    return new Promise((resolve, reject) => {
+        
+        pool.query("SELECT name_att as name, company_att as company, email_att as email, registered_Att as registered FROM attendees where idtalks = ?",
+        [talkid], (err, results) => {
             
             if(err){
                 console.log("error is: "+err);

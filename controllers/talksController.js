@@ -13,6 +13,52 @@ const ListTalksController = async (req, res) => {
     }
    
 }
+const TalksWithAttendanceController = async (req, res) => {
+    try {
+        let resultTalks = await db.master_db.getTalks();
+        var data = [];
+        if(resultTalks.length == 0)
+            return res.status(204).json({msg : "no talks found"});
+
+       
+        await resultTalks.forEach(element => {
+                data.push({id: element.idtalks,tittle: element.tittle_talks, abstract: element.abstract_talks, room: element.room, speaker: element.speaker, attendees:[] })
+            });
+        
+            if (data.length > 0){
+                for (j=0; j < data.length; j++){
+                    console.log("Id search=> ", data[j].id);
+                    await db.master_db.GetAttendee(data[j].id).then((elm)=>{
+                        console.log("Results=> ", elm);
+                        if (elm.length > 0){
+                            for (i=0; i < elm.length; i++){
+                                console.log("elm[i].name=> ", elm[i].name);
+                                data[j].attendees.push({name: elm[i].name, company: elm[i].company, email: elm[i].email, registered: elm[i].registered_Att});
+                                console.log("i == elm.length ", i , elm.length - 1);
+                                console.log("j == data.length ", j, data.length - 1);
+                                console.log("Data Attendee: ",  data[j].attendees);
+                                if (i == elm.length -1 && j == data.length - 1){
+                                    return res.status(200).json({msg : data});
+                                }
+                            }
+                        }else if(j == data.length - 1){
+                            return res.status(200).json({msg : data});
+                        }
+    
+                    });
+                    
+                }
+            }else {
+                res.status(204).json({msg : "no attendees found"});
+            }       
+    
+        
+    } catch (error) {
+        console.log("Error=> ", error);
+        return res.status(500).json({msg : "Internal Server Error"});
+    }
+   
+}
 
 const AddTalkController = async (req, res) => {
     try {
@@ -54,4 +100,4 @@ const RemoveTalkController = async (req, res) => {
     }
 }
 
-module.exports = { AddTalkController, RemoveTalkController, ListTalksController }
+module.exports = { AddTalkController, RemoveTalkController, ListTalksController, TalksWithAttendanceController }
